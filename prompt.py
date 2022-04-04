@@ -177,6 +177,7 @@ class BertPrefixForSequenceClassification(BertPreTrainedModel):
         output_attentions=None,
         output_hidden_states=None,
         return_dict=None,
+        output_embedding=None,
     ):
         return_dict = return_dict #if return_dict is not None else self.config.use_return_dict
 
@@ -211,13 +212,15 @@ class BertPrefixForSequenceClassification(BertPreTrainedModel):
         if not return_dict:
             output = (logits,) + outputs[2:]
             return ((loss,) + output) if loss is not None else output
-
-        return SequenceClassifierOutput(
-            loss=loss,
-            logits=logits,
-            hidden_states=outputs.hidden_states,
-            attentions=outputs.attentions,
-        )
+        if output_embedding is None:
+            return SequenceClassifierOutput(
+                loss=loss,
+                logits=logits,
+                hidden_states=outputs.hidden_states,
+                attentions=outputs.attentions,
+            )
+        else:
+            return pooled_output
 
 
 class BertPromptForSequenceClassification(BertPreTrainedModel):
