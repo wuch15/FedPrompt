@@ -11,7 +11,7 @@
 2. Additional Python Dependencies
 * datasets==1.18.3
 * torch==1.5.0
-* transformers==4.9.0
+* transformers==4.5.0
 The pip installation may need several minutes if there is no environmental conflicts.
 
 2. Hardware requirements
