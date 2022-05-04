@@ -16,6 +16,7 @@ from preprocess import read_news, read_news_bert, get_doc_input, get_doc_input_b
 from model_bert import ModelBert
 from parameters import parse_args
 from ..prompt import * 
+from ..parameters import * 
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 def train(args): 
     assert args.enable_hvd  
@@ -113,6 +114,12 @@ def train(args):
             accuary += utils.acc(targets, y_hat)
             optimizer.zero_grad()
             bz_loss.backward()
+        
+            torch.nn.utils.clip_grad_norm_(model.parameters(), NORMCLIP)
+            for name,p in model.named_parameters():
+                if p.grad is not None:
+                       p.grad += torch.FloatTensor(np.random.normal(0, 2*NORMCLIP*np.sqrt(2*np.log(1.25/DELTA))/EPS/np.sqrt(CLIENT_NUM),size=p.grad.size())).to(device)
+
             optimizer.step()
 
             if cnt % args.log_steps == 0:
